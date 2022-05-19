@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "module": "esnext",
+        "target": "es2016",
+        "strict": true,
+        "esModuleInterop": true,
+        "incremental": false,
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "noUnusedLocals": true
+    },
+    "include": [
+        "./packages"
+    ],
+    "exclude": [
+        "dist",
+        "node_modules"
+    ]
+}
