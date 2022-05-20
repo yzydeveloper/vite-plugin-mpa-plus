@@ -1,5 +1,5 @@
 {
-    "name": "vite-plugin-multi-page",
+    "name": "vite-plugin-multiple-page",
     "version": "0.1.0",
     "description": "More flexible MPA (multipage application) supports html template",
     "author": "yzydeveloper",
