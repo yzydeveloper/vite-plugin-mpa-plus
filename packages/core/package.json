@@ -23,10 +23,10 @@
         "html",
         "vite-plugin"
     ],
-    "homepage": "https://github.com/yzydeveloper/vite-plugin-multi-page",
+    "homepage": "https://github.com/yzydeveloper/vite-plugin-multiple-page",
     "repository": {
         "type": "git",
-        "url": "https://github.com/yzydeveloper/vite-plugin-multi-page"
+        "url": "https://github.com/yzydeveloper/vite-plugin-multiple-page"
     },
     "peerDependencies": {
         "vite": ">=2.0.0"

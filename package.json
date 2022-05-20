@@ -1,12 +1,12 @@
 {
-  "name": "vite-plugin-multi-page",
+  "name": "vite-plugin-multiple-page",
   "version": "0.1.0",
   "license": "MIT",
   "author": "yzydeveloper",
-  "homepage": "https://github.com/yzydeveloper/vite-plugin-multi-page",
+  "homepage": "https://github.com/yzydeveloper/vite-plugin-multiple-page",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yzydeveloper/vite-plugin-multi-page"
+    "url": "https://github.com/yzydeveloper/vite-plugin-multiple-page"
   },
   "dependencies": {
     "vite": "^2.5.10"

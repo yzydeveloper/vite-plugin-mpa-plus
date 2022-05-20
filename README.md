@@ -1,4 +1,4 @@
-# vite-plugin-multi-page
+# vite-plugin-multiple-page
 
 Similar to the [pages](https://cli.vuejs.org/en/config/#pages) option of vue-cli
 
@@ -13,7 +13,7 @@ Similar to the [pages](https://cli.vuejs.org/en/config/#pages) option of vue-cli
 ## Install
 
 ```bash
-pnpm install vite-plugin-multi-page
+pnpm install vite-plugin-multiple-page
 ```
 
 ## Usage
@@ -23,7 +23,7 @@ Add plugin to your vite.config.ts:
 ### Multi-page application configuration
 ```ts
 import { defineConfig } from 'vite'
-import MultiPagePlugin from 'vite-plugin-multi-page'
+import MultiPagePlugin from 'vite-plugin-multiple-page'
 
 export defineConfig({
     MultiPagePlugin({
@@ -57,7 +57,7 @@ export defineConfig({
 
 ```ts
 import { defineConfig } from 'vite'
-import MultiPagePlugin from 'vite-plugin-multi-page'
+import MultiPagePlugin from 'vite-plugin-multiple-page'
 
 export defineConfig({
     MultiPagePlugin({
@@ -76,7 +76,7 @@ export defineConfig({
 ```ts
 import { defineConfig } from 'vite'
 import path from 'path'
-import mpaPlugin from 'vite-plugin-multi-page'
+import mpaPlugin from 'vite-plugin-multiple-page'
 
 export default defineConfig(() => {
     const app = ['app1', 'app2']

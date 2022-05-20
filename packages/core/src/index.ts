@@ -6,7 +6,7 @@ import { render } from 'ejs'
 import { loadEnv, normalizePath as _normalizePath } from 'vite'
 import history from 'connect-history-api-fallback'
 
-const VITE_PLUGIN_NAME = 'vite-plugin-multi-page'
+const VITE_PLUGIN_NAME = 'vite-plugin-multiple-page'
 const DEFAULT_TEMPLATE = 'index.html'
 const INJECT_ENTRY = /<\/body>/
 
