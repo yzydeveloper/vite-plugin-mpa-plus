@@ -1,7 +1,8 @@
 import type { Plugin, ResolvedConfig, UserConfig, Connect } from 'vite'
+import type { Data } from 'ejs'
 import type { PluginMultiPageOptions, InjectOptions, Pages } from './types'
 import { relative, resolve, basename, posix } from 'path'
-import { template } from 'lodash'
+import { render } from 'ejs'
 import { loadEnv, normalizePath as _normalizePath } from 'vite'
 import history from 'connect-history-api-fallback'
 
@@ -90,18 +91,15 @@ export async function renderHtml(
     },
 ) {
     const { inject, viteConfig, env, entry } = pageOptions
-    const { data, templateOptions } = inject
-    const templateData: Record<string, any> = {
+    const { data, ejsOptions } = inject
+    const ejsData: Data = {
         ...(viteConfig?.env ?? {}),
         ...(viteConfig?.define ?? {}),
         ...(env || {}),
         ...data,
     }
 
-    let result = template(html, {
-        ...templateOptions,
-        ...templateData
-    })(templateData)
+    let result = await render(html, ejsData, ejsOptions)
 
     if (entry) {
         result = result.replace(
