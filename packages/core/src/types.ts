@@ -52,5 +52,5 @@ export interface PluginMultiPageOptions {
     /**
      * @description Implement path rewriting based on connect-history-api-fallback
      */
-    historyApiFallback: historyApiFallback.Options
+    historyApiFallback?: historyApiFallback.Options
 }
