@@ -1,9 +1,10 @@
-import type { Plugin, ResolvedConfig, UserConfig } from 'vite'
+import type { Plugin, ResolvedConfig, UserConfig, Connect } from 'vite'
 import type { Data } from 'ejs'
-import type { PluginMultiPageOptions, InjectOptions } from './types'
-import { relative, resolve, basename } from 'path'
+import type { PluginMultiPageOptions, InjectOptions, Pages } from './types'
+import { relative, resolve, basename, posix } from 'path'
 import { render } from 'ejs'
 import { loadEnv, normalizePath as _normalizePath } from 'vite'
+import history from 'connect-history-api-fallback'
 
 const VITE_PLUGIN_NAME = 'vite-plugin-multi-page'
 const DEFAULT_TEMPLATE = 'index.html'
@@ -11,6 +12,20 @@ const INJECT_ENTRY = /<\/body>/
 
 function slash(p: string): string {
     return p.replace(/\\/g, '/')
+}
+
+function genHistoryApiFallbackRewrites(base: string, pages: Pages = {}) {
+    const multiPageRewrites = Object
+        .keys(pages)
+        .sort((a, b) => b.length - a.length)
+        .map(name => ({
+            from: new RegExp(`^/${name}`),
+            to: posix.join(base, pages[name].template || `${name}.html`)
+        }))
+    return [
+        ...multiPageRewrites,
+        { from: /./, to: posix.join(base, 'index.html') }
+    ]
 }
 
 export function normalizePath(id: string) {
@@ -117,6 +132,19 @@ function PluginMultiPage(options: PluginMultiPageOptions): Plugin {
             viteConfig = config
         },
         configureServer(server) {
+            const { historyApiFallback, pages } = options
+            const { base } = viteConfig
+            server.middlewares.use(
+                history({
+                    disableDotRule: true,
+                    htmlAcceptHeaders: [
+                        'text/html',
+                        'application/xhtml+xml'
+                    ],
+                    rewrites: genHistoryApiFallbackRewrites(base, pages),
+                    ...historyApiFallback
+                }) as Connect.NextHandleFunction
+            )
         },
         transformIndexHtml: {
             enforce: 'pre',

@@ -24,8 +24,8 @@ export default defineConfig({
                 },
                 app2: {
                     entry: './src/app/app2/index.ts',
-                    filename: 'other.html',
-                    template: 'src/app/app1/other.html',
+                    filename: 'index.html',
+                    template: 'src/app/app2/index.html',
                     inject: {
                         data: {
                             title: 'mpa'

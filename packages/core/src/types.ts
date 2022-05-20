@@ -1,5 +1,6 @@
 import type { HtmlTagDescriptor } from 'vite'
 import type { Options as EJSOptions } from 'ejs'
+import type historyApiFallback from 'connect-history-api-fallback'
 
 export interface InjectOptions {
     /**
@@ -47,4 +48,9 @@ export interface PluginMultiPageOptions {
      * @description Inject options
      */
     inject?: InjectOptions
+
+    /**
+     * @description Implement path rewriting based on connect-history-api-fallback
+     */
+    historyApiFallback: historyApiFallback.Options
 }

@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-import App from './other-app.vue'
+import App from './app2.vue'
 import { createRouter, createWebHashHistory } from 'vue-router'
 
 const router = createRouter({
