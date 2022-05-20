@@ -1,10 +1,10 @@
 {
     "name": "vite-plugin-multiple-page",
-    "version": "0.1.0",
+    "version": "0.1.2",
     "description": "More flexible MPA (multipage application) supports html template",
     "author": "yzydeveloper",
     "license": "MIT",
-    "main": "src/index.ts",
+    "main": "dist/index.ts",
     "types": "dist/index.d.ts",
     "module": "dist/index.mjs",
     "exports": {
@@ -28,6 +28,9 @@
         "type": "git",
         "url": "https://github.com/yzydeveloper/vite-plugin-multiple-page"
     },
+    "files": [
+        "dist"
+    ],
     "peerDependencies": {
         "vite": ">=2.0.0"
     },
