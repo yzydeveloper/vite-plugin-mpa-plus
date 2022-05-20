@@ -24,9 +24,6 @@ export default defineConfig(() => {
         return _pages
     }, {})
 
-    console.log(rewrites)
-    console.log(pages)
-
     return {
         plugins: [
             vue(),
