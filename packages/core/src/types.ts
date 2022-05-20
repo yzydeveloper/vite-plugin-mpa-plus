@@ -1,5 +1,5 @@
 import type { HtmlTagDescriptor } from 'vite'
-import type { Options as EJSOptions } from 'ejs'
+import type { TemplateOptions } from 'lodash'
 import type historyApiFallback from 'connect-history-api-fallback'
 
 export interface InjectOptions {
@@ -16,7 +16,7 @@ export interface InjectOptions {
     /**
      * @description esj options configuration
      */
-    ejsOptions?: EJSOptions
+    templateOptions?: TemplateOptions
 }
 
 export interface PageOption {
