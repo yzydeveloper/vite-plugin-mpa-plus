@@ -5,6 +5,7 @@ import { relative, resolve, basename, posix } from 'path'
 import { render } from 'ejs'
 import { loadEnv, normalizePath as _normalizePath } from 'vite'
 import history from 'connect-history-api-fallback'
+import { processTags } from './fixHtmlPlugin'
 
 const VITE_PLUGIN_NAME = 'vite-plugin-multiple-page'
 const DEFAULT_TEMPLATE = 'index.html'
@@ -162,7 +163,7 @@ function PluginMultiPage(options: PluginMultiPageOptions): Plugin {
                 })
                 return {
                     html: _html,
-                    tags: page.inject?.tags ?? []
+                    tags: processTags(page.inject?.tags ?? []) ?? []
                 }
             },
         }
