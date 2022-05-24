@@ -55,7 +55,10 @@ export function createInput(options: PluginMultiPageOptions, viteConfig: UserCon
             [key]: resolve(root || process.cwd(), template),
         }
     }
-    return input
+    return {
+        ...input,
+        ...(viteConfig.build?.rollupOptions?.input as Record<string, string> ?? {})
+    }
 }
 
 export function createPage(
