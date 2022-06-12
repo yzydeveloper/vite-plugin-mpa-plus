@@ -1,9 +1,38 @@
-import type { Plugin } from 'vite'
-import type { InjectOptions } from './types'
+import type { Plugin, ResolvedConfig } from 'vite'
+import type { InjectOptions, PluginMultiPageOptions } from './types'
+import fs from 'fs'
+import path from 'path'
 import { parse } from 'node-html-parser'
 
 const VITE_PLUGIN_NAME = 'vite-plugin-html-fix'
 const SPLIT_MARK = `_${VITE_PLUGIN_NAME}_`
+
+function slash(p: string): string {
+    return p.replace(/\\/g, '/')
+}
+
+function writeFile(
+    filename: string,
+    content: string | Uint8Array
+): void {
+    const dir = path.dirname(filename)
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true })
+    }
+    fs.writeFileSync(filename, content)
+}
+
+// function emptyDir(dir: string): void {
+//     for (const file of fs.readdirSync(dir)) {
+//         const abs = path.resolve(dir, file)
+//         if (fs.lstatSync(abs).isDirectory()) {
+//             emptyDir(abs)
+//             fs.rmdirSync(abs)
+//         } else {
+//             fs.unlinkSync(abs)
+//         }
+//     }
+// }
 
 export function processTags(tags: InjectOptions['tags']): InjectOptions['tags'] {
     const _tags = tags?.map(tag => {
@@ -21,9 +50,13 @@ export function processTags(tags: InjectOptions['tags']): InjectOptions['tags'] 
     return _tags ?? []
 }
 
-export function createPluginHtmlFix(): Plugin {
+export function createPluginHtmlFix(options: PluginMultiPageOptions): Plugin {
+    let viteConfig: ResolvedConfig
     return {
         name: VITE_PLUGIN_NAME,
+        configResolved(config) {
+            viteConfig = config
+        },
         transformIndexHtml: {
             enforce: 'post',
             transform(html) {
@@ -38,6 +71,31 @@ export function createPluginHtmlFix(): Plugin {
                     html: _html,
                     tags: []
                 }
+            }
+        },
+        closeBundle() {
+            const root = slash(viteConfig.root || process.cwd())
+            const dest = slash(viteConfig.build.outDir || 'dist')
+            const map = Object.values(options.pages || {}).reduce<Record<string, string>>((result, page) => {
+                Reflect.set(result, page.template, page.filename)
+                return result
+            }, {})
+            const { input } = viteConfig.build.rollupOptions
+
+            if (input instanceof Object && !Array.isArray(input)) {
+                Object.values(input).forEach(async item => {
+                    const absolutePath = slash(item) // 获取入口文件的绝对/相对路径
+                    const relativePath = absolutePath.replace(`${root}/`, '')
+                    const source = path.join(root, dest, relativePath)
+                    if (map[relativePath]) { // 防止入口有其他文件类型的入口
+                        const output = path.join(root, dest, map[relativePath])// 根据入口文件路径寻找对应的文件
+                        const content = fs.readFileSync(source) // 获取入口文件的内容
+                        await writeFile(output, content)
+                        const [dir] = relativePath.split('/') // 获取要输出的文件目录
+                        const abs = path.join(root, dest, dir)
+                        await fs.rmSync(abs, { recursive: true, force: true })
+                    }
+                })
             }
         }
     }

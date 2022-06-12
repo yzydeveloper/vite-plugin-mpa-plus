@@ -4,7 +4,7 @@ import { createPluginMultiPage } from './multiPagePlugin'
 import { createPluginHtmlFix } from './htmlFixPlugin'
 
 function createPlugin(options: PluginMultiPageOptions): PluginOption {
-    return [createPluginMultiPage(options), createPluginHtmlFix()]
+    return [createPluginMultiPage(options), createPluginHtmlFix(options)]
 }
 
 export default createPlugin
