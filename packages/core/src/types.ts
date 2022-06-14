@@ -27,6 +27,7 @@ export interface PageOption {
 }
 
 export type Pages = Record<string, PageOption>
+export type Rewrite = historyApiFallback.Rewrite
 
 export interface PluginMultiPageOptions {
     /**
