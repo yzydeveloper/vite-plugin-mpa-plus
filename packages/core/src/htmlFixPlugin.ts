@@ -11,6 +11,10 @@ function slash(p: string): string {
     return p.replace(/\\/g, '/')
 }
 
+function isProduction(mode: string) {
+    return mode === 'production'
+}
+
 function writeFile(
     filename: string,
     content: string | Uint8Array
@@ -74,6 +78,7 @@ export function createPluginHtmlFix(options: PluginMultiPageOptions): Plugin {
             }
         },
         closeBundle() {
+            if (!isProduction(viteConfig.mode)) return
             const root = slash(viteConfig.root || process.cwd())
             const dest = slash(viteConfig.build.outDir || 'dist')
             const map = Object.values(options.pages || {}).reduce<Record<string, string>>((result, page) => {
