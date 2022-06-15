@@ -171,7 +171,7 @@ export function createPluginMultiPage(options: PluginMultiPageOptions): Plugin {
                 rewrites = genHistoryApiFallbackRewrites(base, pages)
             }
             server.middlewares.use(async (req, res, next) => {
-                const { from, to } = rewrites.find(item => item.from.test(req.url || '')) ?? {} // 根据rewrites找到此路径要重写为的路径，此路径一定是page.filename
+                const { from, to } = rewrites.find(item => req.url?.match(item.from)) ?? {} // 根据rewrites找到此路径要重写为的路径，此路径一定是page.filename
                 if (to) {
                     const _to = evaluate(req, from, to)
                     const page = Object.values(pages).find(page => _normalizePath(`/${page.filename}`) === _normalizePath(`/${_to}`)) // 根据filename找到对应的page
