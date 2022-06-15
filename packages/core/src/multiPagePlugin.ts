@@ -107,9 +107,12 @@ export function createPage(
 }
 
 // Find the page according to ' rewrites.from '
+// it's an escape
 export function findPage(originalUrl: string | undefined, rewrites: Rewrite[], pages: Pages = {}) {
-    const { from, to } = rewrites.find(item => originalUrl?.match(item.from)) ?? {}
-    const _to = evaluate({ url: originalUrl }, from, to)
+    const url = originalUrl === '/' ? '/index' : originalUrl
+    const rewrite = rewrites.find(item => url?.match(item.from))
+    if (!rewrite) return
+    const _to = evaluate({ url }, rewrite.from, rewrite.to)
     const page = Object.values(pages).find(page => _normalizePath(`/${page.filename}`) === _normalizePath(`/${_to}`))
     return page
 }
