@@ -1,6 +1,6 @@
 {
     "name": "vite-plugin-multiple-page",
-    "version": "0.3.3",
+    "version": "0.4.0",
     "description": "More flexible MPA (multipage application) supports html template",
     "author": "yzydeveloper",
     "license": "MIT",
