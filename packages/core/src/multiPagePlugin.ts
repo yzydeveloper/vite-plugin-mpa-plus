@@ -30,8 +30,9 @@ function genHistoryApiFallbackRewrites(base: string, pages: Pages = {}) {
     ]
 }
 
-function evaluate(req: IncomingMessage, from: RegExp | undefined, to: any) {
-    const url = req?.url || ''
+// it's an escape
+function evaluate(req: Partial<IncomingMessage>, from: RegExp | undefined, to: any) {
+    const url = req.url || ''
     const match = url.match(from || /(?:)/)
     if (typeof to === 'string') {
         return to
@@ -46,7 +47,7 @@ function evaluate(req: IncomingMessage, from: RegExp | undefined, to: any) {
     throw new Error('Rewrite rule can only be of type string or function.')
 }
 
-// 二次处理规范化后的路径
+// Process the normalized path again
 export function normalizePath(id: string) {
     const fsPath = slash(relative(process.cwd(), _normalizePath(`${id}`)))
     if (fsPath.startsWith('/') || fsPath.startsWith('../')) {
@@ -55,6 +56,7 @@ export function normalizePath(id: string) {
     return `/${fsPath}`
 }
 
+// create input
 export function createInput(options: PluginMultiPageOptions, viteConfig: UserConfig | ResolvedConfig) {
     let isMpa = false
     const { pages = {}, template = DEFAULT_TEMPLATE } = options
@@ -79,6 +81,7 @@ export function createInput(options: PluginMultiPageOptions, viteConfig: UserCon
     }
 }
 
+// create page
 export function createPage(
     options: PluginMultiPageOptions,
     fsPath: string
@@ -100,6 +103,14 @@ export function createPage(
             inject
         }
     }
+    return page
+}
+
+// Find the page according to ' rewrites.from '
+export function findPage(originalUrl: string | undefined, rewrites: Rewrite[], pages: Pages = {}) {
+    const { from, to } = rewrites.find(item => originalUrl?.match(item.from)) ?? {}
+    const _to = evaluate({ url: originalUrl }, from, to)
+    const page = Object.values(pages).find(page => _normalizePath(`/${page.filename}`) === _normalizePath(`/${_to}`))
     return page
 }
 
@@ -135,6 +146,7 @@ export async function renderHtml(
 export function createPluginMultiPage(options: PluginMultiPageOptions): Plugin {
     let viteConfig: ResolvedConfig
     let env: Record<string, string> = {}
+    let rewrites: Rewrite[] = []
 
     return {
         name: VITE_PLUGIN_NAME,
@@ -156,7 +168,6 @@ export function createPluginMultiPage(options: PluginMultiPageOptions): Plugin {
         configureServer(server) {
             const { historyApiFallback, pages = {} } = options
             const { base } = viteConfig
-            let rewrites: Rewrite[] = []
             if (historyApiFallback?.rewrites) {
                 rewrites = Object.values(pages).map(page => ({
                     from: new RegExp(`^/${page.filename}`),
@@ -176,6 +187,10 @@ export function createPluginMultiPage(options: PluginMultiPageOptions): Plugin {
                     const _to = evaluate(req, from, to)
                     const page = Object.values(pages).find(page => _normalizePath(`/${page.filename}`) === _normalizePath(`/${_to}`)) // 根据filename找到对应的page
                     if (page) {
+                        // const fsPath = resolve(viteConfig.root || process.cwd(), page.template)
+                        // let content = readFileSync(fsPath, { encoding: 'utf-8' })
+                        // content = await server.transformIndexHtml(_normalizePath(`/${page?.template}`), content, req.originalUrl)
+                        // res.end(content)
                         req.url = _normalizePath(`/${page.template}`)
                         return next()
                     }
@@ -200,7 +215,7 @@ export function createPluginMultiPage(options: PluginMultiPageOptions): Plugin {
                 const { base } = viteConfig
                 const excludeBaseUrl = url.replace(base, '/')
                 const template = relative(process.cwd(), excludeBaseUrl)
-                const page = createPage(options, template)
+                const page = findPage(ctx.originalUrl, rewrites, options.pages) ?? createPage(options, template)
                 const _html = await renderHtml(html, {
                     entry: page.entry,
                     inject: page.inject || {},
