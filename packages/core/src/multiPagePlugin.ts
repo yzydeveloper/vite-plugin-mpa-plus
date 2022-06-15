@@ -30,7 +30,7 @@ function genHistoryApiFallbackRewrites(base: string, pages: Pages = {}) {
     ]
 }
 
-// it's an escape
+// this is a try
 function evaluate(req: Partial<IncomingMessage>, from: RegExp | undefined, to: any) {
     const url = req.url || ''
     const match = url.match(from || /(?:)/)
@@ -107,13 +107,13 @@ export function createPage(
 }
 
 // Find the page according to ' rewrites.from '
-// it's an escape
-export function findPage(originalUrl: string | undefined, rewrites: Rewrite[], pages: Pages = {}) {
-    const url = originalUrl === '/' ? '/index' : originalUrl
+// this is a try
+export function tryFindPage(escapeReq: Partial<IncomingMessage>, rewrites: Rewrite[], pages: Pages = {}) {
+    const url = escapeReq.url === '/' ? '/index' : escapeReq.url
     const rewrite = rewrites.find(item => url?.match(item.from))
     if (!rewrite) return
-    const _to = evaluate({ url }, rewrite.from, rewrite.to)
-    const page = Object.values(pages).find(page => _normalizePath(`/${page.filename}`) === _normalizePath(`/${_to}`))
+    const to = evaluate(escapeReq, rewrite.from, rewrite.to)
+    const page = Object.values(pages).find(page => _normalizePath(`/${page.filename}`) === _normalizePath(`/${to}`))
     return page
 }
 
@@ -185,18 +185,14 @@ export function createPluginMultiPage(options: PluginMultiPageOptions): Plugin {
                 rewrites = genHistoryApiFallbackRewrites(base, pages)
             }
             server.middlewares.use(async (req, res, next) => {
-                const { from, to } = rewrites.find(item => req.url?.match(item.from)) ?? {} // 根据rewrites找到此路径要重写为的路径，此路径一定是page.filename
-                if (to) {
-                    const _to = evaluate(req, from, to)
-                    const page = Object.values(pages).find(page => _normalizePath(`/${page.filename}`) === _normalizePath(`/${_to}`)) // 根据filename找到对应的page
-                    if (page) {
-                        // const fsPath = resolve(viteConfig.root || process.cwd(), page.template)
-                        // let content = readFileSync(fsPath, { encoding: 'utf-8' })
-                        // content = await server.transformIndexHtml(_normalizePath(`/${page?.template}`), content, req.originalUrl)
-                        // res.end(content)
-                        req.url = _normalizePath(`/${page.template}`)
-                        return next()
-                    }
+                const page = tryFindPage(req, rewrites, pages)
+                if (page) {
+                    // const fsPath = resolve(viteConfig.root || process.cwd(), page.template)
+                    // let content = readFileSync(fsPath, { encoding: 'utf-8' })
+                    // content = await server.transformIndexHtml(_normalizePath(`/${page?.template}`), content, req.originalUrl)
+                    // res.end(content)
+                    req.url = _normalizePath(`/${page.template}`)
+                    return next()
                 }
 
                 const _history = history({
@@ -218,7 +214,7 @@ export function createPluginMultiPage(options: PluginMultiPageOptions): Plugin {
                 const { base } = viteConfig
                 const excludeBaseUrl = url.replace(base, '/')
                 const template = relative(process.cwd(), excludeBaseUrl)
-                const page = findPage(ctx.originalUrl, rewrites, options.pages) ?? createPage(options, template)
+                const page = tryFindPage({ url: ctx.originalUrl }, rewrites, options.pages) ?? createPage(options, template)
                 const _html = await renderHtml(html, {
                     entry: page.entry,
                     inject: page.inject || {},
