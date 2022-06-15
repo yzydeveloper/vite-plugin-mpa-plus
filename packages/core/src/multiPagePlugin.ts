@@ -11,6 +11,16 @@ import { processTags } from './htmlFixPlugin'
 const VITE_PLUGIN_NAME = 'vite-plugin-multiple-page'
 const DEFAULT_TEMPLATE = 'index.html'
 const INJECT_ENTRY = /<\/body>/
+const SKIPPED_EXTENSIONS = [
+    '.mjs',
+    '.js',
+    '.ts',
+    '.jsx',
+    '.tsx',
+    '.json',
+    '.vue'
+]
+const SKIPPED_EXTENSIONS_REGEX = new RegExp(`\\.(${SKIPPED_EXTENSIONS.join('|').replace(/\./g, '')})$`)
 
 function slash(p: string): string {
     return p.replace(/\\/g, '/')
@@ -31,7 +41,7 @@ function genHistoryApiFallbackRewrites(base: string, pages: Pages = {}) {
 }
 
 // this is a try
-function evaluate(req: Partial<IncomingMessage>, from: RegExp | undefined, to: any) {
+function evaluateRewriteTo(req: Partial<IncomingMessage>, from: RegExp | undefined, to: any) {
     const url = req.url || ''
     const match = url.match(from || /(?:)/)
     if (typeof to === 'string') {
@@ -108,11 +118,12 @@ export function createPage(
 
 // Find the page according to ' rewrites.from '
 // this is a try
-export function tryFindPage(escapeReq: Partial<IncomingMessage>, rewrites: Rewrite[], pages: Pages = {}) {
-    const url = escapeReq.url === '/' ? '/index' : escapeReq.url
+export function tryFindPage(forgeReq: Partial<IncomingMessage>, rewrites: Rewrite[], pages: Pages = {}) {
+    if (SKIPPED_EXTENSIONS_REGEX.test(forgeReq.url || '')) return
+    const url = forgeReq.url === '/' ? '/index' : forgeReq.url
     const rewrite = rewrites.find(item => url?.match(item.from))
     if (!rewrite) return
-    const to = evaluate(escapeReq, rewrite.from, rewrite.to)
+    const to = evaluateRewriteTo(forgeReq, rewrite.from, rewrite.to)
     const page = Object.values(pages).find(page => _normalizePath(`/${page.filename}`) === _normalizePath(`/${to}`))
     return page
 }
