@@ -11,6 +11,7 @@ import { processTags } from './htmlFixPlugin'
 const VITE_PLUGIN_NAME = 'vite-plugin-multiple-page'
 const DEFAULT_TEMPLATE = 'index.html'
 const INJECT_ENTRY = /<\/body>/
+const IS_INDEX = /^\/index$|^\/$/
 const SKIPPED_EXTENSIONS = [
     '.mjs',
     '.js',
@@ -119,9 +120,15 @@ export function createPage(
 // Find the page according to ' rewrites.from '
 // this is a try
 export function tryFindPage(forgeReq: Partial<IncomingMessage>, rewrites: Rewrite[], pages: Pages = {}) {
-    if (SKIPPED_EXTENSIONS_REGEX.test(forgeReq.url || '')) return
-    const url = forgeReq.url === '/' ? '/index' : forgeReq.url
-    const rewrite = rewrites.find(item => url?.match(item.from))
+    const { url } = forgeReq
+    if (SKIPPED_EXTENSIONS_REGEX.test(url || '')) return
+    const isIndex = url?.match(IS_INDEX)
+    const rewrite = rewrites.find(item => {
+        if (isIndex) {
+            return '/index'.match(item.from) || '/'.match(item.from) // Compatible with /^\/index$/ /^\/$/
+        }
+        return url?.match(item.from)
+    })
     if (!rewrite) return
     const to = evaluateRewriteTo(forgeReq, rewrite.from, rewrite.to)
     const page = Object.values(pages).find(page => _normalizePath(`/${page.filename}`) === _normalizePath(`/${to}`))
