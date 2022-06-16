@@ -4,7 +4,7 @@
     "description": "More flexible MPA (multipage application) supports html template",
     "author": "yzydeveloper",
     "license": "MIT",
-    "main": "dist/index.ts",
+    "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "module": "dist/index.mjs",
     "exports": {
