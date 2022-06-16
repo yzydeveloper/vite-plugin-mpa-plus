@@ -2,6 +2,7 @@ import type { Plugin, ResolvedConfig } from 'vite'
 import type { InjectOptions, PluginMultiPageOptions } from './types'
 import fs from 'fs'
 import path from 'path'
+import { normalizePath } from 'vite'
 import { parse } from 'node-html-parser'
 
 const VITE_PLUGIN_NAME = 'vite-plugin-html-fix'
@@ -82,15 +83,14 @@ export function createPluginHtmlFix(options: PluginMultiPageOptions): Plugin {
             const root = slash(viteConfig.root || process.cwd())
             const dest = slash(viteConfig.build.outDir || 'dist')
             const map = Object.values(options.pages || {}).reduce<Record<string, string>>((result, page) => {
-                Reflect.set(result, page.template, page.filename)
+                Reflect.set(result, normalizePath(page.template), normalizePath(page.filename))
                 return result
             }, {})
             const { input } = viteConfig.build.rollupOptions
-
             if (input instanceof Object && !Array.isArray(input)) {
                 Object.values(input).forEach(async item => {
                     const absolutePath = slash(item) // 获取入口文件的绝对/相对路径
-                    const relativePath = absolutePath.replace(`${root}/`, '')
+                    const relativePath = normalizePath(absolutePath.replace(`${root}/`, ''))
                     const source = path.join(root, dest, relativePath)
                     if (map[relativePath]) { // 防止入口有其他文件类型的入口
                         const output = path.join(root, dest, map[relativePath])// 根据入口文件路径寻找对应的文件
