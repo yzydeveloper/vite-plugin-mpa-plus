@@ -37,7 +37,7 @@ function genHistoryApiFallbackRewrites(base: string, pages: Pages = {}) {
         }))
     return [
         ...multiPageRewrites,
-        { from: /./, to: posix.join(base, 'index.html') }
+        { from: /^\/$/, to: posix.join(base, 'index.html') }
     ]
 }
 
@@ -214,7 +214,7 @@ export function createPluginMultiPage(options: PluginMultiPageOptions): Plugin {
                 }
 
                 const _history = history({
-                    disableDotRule: true,
+                    disableDotRule: undefined,
                     htmlAcceptHeaders: [
                         'text/html',
                         'application/xhtml+xml'
