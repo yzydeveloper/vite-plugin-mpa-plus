@@ -9,7 +9,7 @@ export default defineConfig({
             pages: {
                 app1: {
                     entry: 'src/app/app1/index.ts',
-                    filename: 'index.html',
+                    filename: '/pages/app1.html',
                     template: 'src/app/app1/index.html',
                     inject: {
                         data: {
@@ -19,7 +19,7 @@ export default defineConfig({
                 },
                 app2: {
                     entry: 'src/app/app2/index.ts',
-                    filename: 'index.html',
+                    filename: '/pages/app2.html',
                     template: 'src/app/app2/index.html',
                     inject: {
                         data: {
