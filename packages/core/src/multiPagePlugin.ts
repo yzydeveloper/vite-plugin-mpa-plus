@@ -202,6 +202,7 @@ export function createPluginMultiPage(options: PluginMultiPageOptions): Plugin {
             } else {
                 rewrites = genHistoryApiFallbackRewrites(base, pages)
             }
+
             server.middlewares.use(async (req, res, next) => {
                 const page = tryFindPage(req, rewrites, pages)
                 if (page) {
@@ -210,20 +211,19 @@ export function createPluginMultiPage(options: PluginMultiPageOptions): Plugin {
                     // content = await server.transformIndexHtml(_normalizePath(`/${page?.template}`), content, req.originalUrl)
                     // res.end(content)
                     req.url = _normalizePath(`/${page.template}`)
-                    return next()
                 }
-
-                const _history = history({
-                    disableDotRule: undefined,
-                    htmlAcceptHeaders: [
-                        'text/html',
-                        'application/xhtml+xml'
-                    ],
-                    rewrites,
-                    ...historyApiFallback
-                }) as Connect.NextHandleFunction
-                _history(req, res, next)
+                next()
             })
+
+            server.middlewares.use(history({
+                disableDotRule: undefined,
+                htmlAcceptHeaders: [
+                    'text/html',
+                    'application/xhtml+xml'
+                ],
+                rewrites,
+                ...historyApiFallback
+            }) as Connect.NextHandleFunction)
         },
         transformIndexHtml: {
             enforce: 'pre',
@@ -234,14 +234,14 @@ export function createPluginMultiPage(options: PluginMultiPageOptions): Plugin {
                 const template = relative(process.cwd(), excludeBaseUrl)
                 const page = tryFindPage({ url: ctx.originalUrl }, rewrites, options.pages) ?? createPage(options, template)
                 const _html = await renderHtml(html, {
-                    entry: page.entry,
-                    inject: page.inject || {},
+                    entry: page?.entry,
+                    inject: page?.inject ?? {},
                     viteConfig,
                     env
                 })
                 return {
                     html: _html,
-                    tags: processTags(page.inject?.tags ?? []) ?? []
+                    tags: processTags(page?.inject?.tags ?? []) ?? []
                 }
             },
         }
