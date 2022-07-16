@@ -6,12 +6,28 @@ export default defineConfig({
     plugins: [
         vue(),
         mpaPlugin({
-            entry: 'src/main.ts',
-            inject: {
-                data: {
-                    title: 'spa'
-                }
-            }
+            pages: {
+                index: {
+                    entry: 'src/main.ts',
+                    filename: 'index.html',
+                    template: 'index.html',
+                    inject: {
+                        data: {
+                            title: 'spa',
+                        },
+                    },
+                },
+                two: {
+                    entry: 'src/main.ts',
+                    filename: 'two.html',
+                    template: 'index.html',
+                    inject: {
+                        data: {
+                            title: 'spa',
+                        },
+                    },
+                },
+            },
         }),
     ],
 })

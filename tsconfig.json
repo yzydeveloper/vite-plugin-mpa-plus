@@ -10,11 +10,6 @@
         "resolveJsonModule": true,
         "noUnusedLocals": true
     },
-    "include": [
-        "./packages"
-    ],
-    "exclude": [
-        "dist",
-        "node_modules"
-    ]
+    "include": ["./packages/**/*.d.ts", "./packages/**/*.js"],
+    "exclude": ["dist", "node_modules"]
 }

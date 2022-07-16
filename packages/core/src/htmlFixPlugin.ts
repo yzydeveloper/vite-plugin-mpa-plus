@@ -16,10 +16,7 @@ function isProduction(mode: string) {
     return mode === 'production'
 }
 
-function writeFile(
-    filename: string,
-    content: string | Uint8Array
-): void {
+function writeFile(filename: string, content: string | Uint8Array): void {
     const dir = path.dirname(filename)
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true })
@@ -82,24 +79,26 @@ export function createPluginHtmlFix(options: PluginMultiPageOptions): Plugin {
             if (!isProduction(viteConfig.mode)) return
             const root = slash(viteConfig.root || process.cwd())
             const dest = slash(viteConfig.build.outDir || 'dist')
-            const map = Object.values(options.pages || {}).reduce<Record<string, string>>((result, page) => {
-                Reflect.set(result, normalizePath(page.template), normalizePath(page.filename))
-                return result
-            }, {})
+            const pages = options.pages || {}
             const { input } = viteConfig.build.rollupOptions
             if (input instanceof Object && !Array.isArray(input)) {
-                Object.values(input).forEach(async item => {
+                const filenames: string[] = []
+                Object.keys(input).forEach(async key => {
+                    const item = input[key]
                     const absolutePath = slash(item) // 获取入口文件的绝对/相对路径
                     const relativePath = normalizePath(absolutePath.replace(`${root}/`, ''))
                     const source = path.join(root, dest, relativePath)
-                    if (map[relativePath]) { // 防止入口有其他文件类型的入口
-                        const output = path.join(root, dest, map[relativePath])// 根据入口文件路径寻找对应的文件
-                        const content = fs.readFileSync(source) // 获取入口文件的内容
-                        await writeFile(output, content)
-                        const [dir] = relativePath.split('/') // 获取要输出的文件目录
-                        const abs = path.join(root, dest, dir)
-                        await fs.rmSync(abs, { recursive: true, force: true })
-                    }
+                    const page = pages[key]
+                    if (!page) return
+                    const output = path.join(root, dest, page.filename) // 根据入口文件路径寻找对应的文件
+                    const content = fs.readFileSync(source) // 获取入口文件的内容
+                    await writeFile(output, content)
+
+                    filenames.push(page.filename)
+                    const [dir] = relativePath.split('/') // 获取要输出的文件目录
+                    if (filenames.includes(dir)) return
+                    const abs = path.join(root, dest, dir)
+                    await fs.rmSync(abs, { recursive: true, force: true })
                 })
             }
         }
