@@ -3,10 +3,10 @@
   "version": "0.4.3",
   "license": "MIT",
   "author": "yzydeveloper",
-  "homepage": "https://github.com/yzydeveloper/vite-plugin-multiple-page",
+  "homepage": "https://github.com/yzydeveloper/vite-plugin-mpa",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yzydeveloper/vite-plugin-multiple-page"
+    "url": "https://github.com/yzydeveloper/vite-plugin-mpa"
   },
   "dependencies": {
     "vite": "^2.5.10"
