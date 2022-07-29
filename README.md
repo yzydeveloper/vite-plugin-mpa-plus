@@ -1,4 +1,4 @@
-# vite-plugin-multiple-page
+# vite-plugin-mpa
 
 Similar to the [pages](https://cli.vuejs.org/en/config/#pages) option of vue-cli
 
