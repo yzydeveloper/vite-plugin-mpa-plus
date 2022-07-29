@@ -1,12 +1,12 @@
 {
-  "name": "vite-plugin-mpa-plus-monorepo",
+  "name": "vite-plugin-multiple-page-monorepo",
   "version": "0.4.3",
   "license": "MIT",
   "author": "yzydeveloper",
-  "homepage": "https://github.com/yzydeveloper/vite-plugin-mpa-plus",
+  "homepage": "https://github.com/yzydeveloper/vite-plugin-multiple-page",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yzydeveloper/vite-plugin-mpa-plus"
+    "url": "https://github.com/yzydeveloper/vite-plugin-multiple-page"
   },
   "dependencies": {
     "vite": "^2.5.10"

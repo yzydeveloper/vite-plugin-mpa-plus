@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import mpaPlugin from 'vite-plugin-mpa-plus'
+import mpaPlugin from 'vite-plugin-multiple-page'
 
 export default defineConfig({
     plugins: [
