@@ -1,6 +1,6 @@
 {
-    "name": "vite-plugin-multiple-page",
-    "version": "0.4.3",
+    "name": "vite-plugin-mpa-plus",
+    "version": "0.4.4",
     "description": "More flexible MPA (multipage application) supports html template",
     "author": "yzydeveloper",
     "license": "MIT",
@@ -23,10 +23,10 @@
         "html",
         "vite-plugin"
     ],
-    "homepage": "https://github.com/yzydeveloper/vite-plugin-multiple-page",
+    "homepage": "https://github.com/yzydeveloper/vite-plugin-mpa-plus",
     "repository": {
         "type": "git",
-        "url": "https://github.com/yzydeveloper/vite-plugin-multiple-page"
+        "url": "https://github.com/yzydeveloper/vite-plugin-mpa-plus"
     },
     "files": [
         "dist"

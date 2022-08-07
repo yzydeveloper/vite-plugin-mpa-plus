@@ -7,7 +7,7 @@
     "build": "vite build"
   },
   "dependencies": {
-    "vite-plugin-multiple-page": "workspace:*",
+    "vite-plugin-mpa-plus": "workspace:*",
     "vue": "^3.2.31",
     "vue-router": "^4.0.14"
   },

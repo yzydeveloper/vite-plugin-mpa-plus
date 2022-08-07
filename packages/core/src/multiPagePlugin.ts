@@ -8,7 +8,7 @@ import { loadEnv, normalizePath as _normalizePath } from 'vite'
 import history from 'connect-history-api-fallback'
 import { processTags } from './htmlFixPlugin'
 
-const VITE_PLUGIN_NAME = 'vite-plugin-multiple-page'
+const VITE_PLUGIN_NAME = 'vite-plugin-mpa-plus'
 const DEFAULT_TEMPLATE = 'index.html'
 const INJECT_ENTRY = /<\/body>/
 const IS_INDEX = /^\/index$|^\/$/
