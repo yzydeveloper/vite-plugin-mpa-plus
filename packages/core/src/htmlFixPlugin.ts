@@ -1,5 +1,5 @@
 import type { Plugin, ResolvedConfig } from 'vite'
-import type { InjectOptions, PluginMultiPageOptions } from './types'
+import type { InjectOptions, Options } from './types'
 import fs from 'fs'
 import path from 'path'
 import { normalizePath } from 'vite'
@@ -55,7 +55,7 @@ export function processTags(tags: InjectOptions['tags']): InjectOptions['tags'] 
     return _tags ?? []
 }
 
-export function createPluginHtmlFix(options: PluginMultiPageOptions): Plugin {
+export function createHtmlFixPlugin(options: Options): Plugin {
     let viteConfig: ResolvedConfig
     return {
         name: VITE_PLUGIN_NAME,

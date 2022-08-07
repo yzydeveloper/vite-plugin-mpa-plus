@@ -23,10 +23,10 @@ Add plugin to your vite.config.ts:
 ### Multi-page application configuration
 ```ts
 import { defineConfig } from 'vite'
-import MultiPagePlugin from 'vite-plugin-mpa-plus'
+import mpaPlugin from 'vite-plugin-mpa-plus'
 
 export defineConfig({
-    MultiPagePlugin({
+    mpaPlugin({
         pages: {
             app1: {
                 entry: 'src/app/app1/index.ts',
@@ -57,10 +57,10 @@ export defineConfig({
 
 ```ts
 import { defineConfig } from 'vite'
-import MultiPagePlugin from 'vite-plugin-mpa-plus'
+import mpaPlugin from 'vite-plugin-mpa-plus'
 
 export defineConfig({
-    MultiPagePlugin({
+    mpaPlugin({
         entry: 'src/main.ts',
         inject: {
             data: {

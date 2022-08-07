@@ -1,7 +1,7 @@
 import type { Plugin, ResolvedConfig, UserConfig, Connect } from 'vite'
 import type { Data } from 'ejs'
 import type { IncomingMessage } from 'http'
-import type { PluginMultiPageOptions, InjectOptions, Pages, Rewrite } from './types'
+import type { Options, InjectOptions, Pages, Rewrite } from './types'
 import { relative, resolve, basename, posix } from 'path'
 import { render } from 'ejs'
 import { loadEnv, normalizePath as _normalizePath } from 'vite'
@@ -68,7 +68,7 @@ export function normalizePath(id: string) {
 }
 
 // create input
-export function createInput(options: PluginMultiPageOptions, viteConfig: UserConfig | ResolvedConfig) {
+export function createInput(options: Options, viteConfig: UserConfig | ResolvedConfig) {
     let isMpa = false
     const { pages = {}, template = DEFAULT_TEMPLATE } = options
     const { root } = viteConfig
@@ -94,7 +94,7 @@ export function createInput(options: PluginMultiPageOptions, viteConfig: UserCon
 
 // create page
 export function createPage(
-    options: PluginMultiPageOptions,
+    options: Options,
     fsPath: string
 ) {
     let page
@@ -164,7 +164,7 @@ export async function renderHtml(
     return result
 }
 
-export function createPluginMultiPage(options: PluginMultiPageOptions): Plugin {
+export function createMpaPlugin(options: Options): Plugin {
     let viteConfig: ResolvedConfig
     let env: Record<string, string> = {}
     let rewrites: Rewrite[] = []
