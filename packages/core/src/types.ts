@@ -21,7 +21,7 @@ export interface InjectOptions {
 
 export interface PageOption {
     entry?: string
-    filename: string
+    filename?: string
     template: string
     inject?: InjectOptions
 }
