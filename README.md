@@ -30,8 +30,8 @@ export defineConfig({
         pages: {
             app1: {
                 entry: 'src/app/app1/index.ts',
-                filename: 'index.html',
-                template: 'src/app/app1/App.vue',
+                filename: '/pages/app1.html',
+                template: 'src/app/app1/index.html',
                 inject: {
                     data: {
                         title: "mpa-app1"
@@ -40,8 +40,8 @@ export defineConfig({
             },
             app2: {
                 entry: 'src/app/app2/index.ts',
-                filename: 'index.html',
-                template: 'src/app/app2/App.vue',
+                filename: '/pages/app2.html',
+                template: 'src/app/app2/index.html',
                 inject: {
                     data: {
                         title: "mpa-app2"
@@ -74,31 +74,32 @@ export defineConfig({
 ### historyApiFallback configuration
 
 ```ts
+import type { Rewrite, Pages } from 'vite-plugin-mpa-plus'
 import { defineConfig } from 'vite'
 import path from 'path'
 import mpaPlugin from 'vite-plugin-mpa-plus'
 
-export default defineConfig(() => {
-    const app = ['app1', 'app2']
-    const rewrites = []
-    const pages = app.reduce<Record<string, any>>((_pages, pageName) => {
-        _pages[pageName] = {
-            entry: `src/app/${pageName}/index.ts`,
-            filename: `${pageName}.html`,
-            template: `src/app/${pageName}/index.html`,
-            inject: {
-                data: {
-                    title: 'mpa'
-                }
+const entrys = ['app1', 'app2']
+const rewrites:Rewrite = []
+const pages = entrys.reduce<Pages>((result, pageName) => {
+    result[pageName] = {
+        entry: `src/app/${pageName}/index.ts`,
+        filename: `/pages/${pageName}.html`,
+        template: `src/app/${pageName}/index.html`,
+        inject: {
+            data: {
+                title: 'mpa'
             }
         }
-        rewrites.push({
-            from: `/view-${pageName}`,
-            to: path.posix.join('/', `/src/app/${pageName}/index.html`)
-        })
-        return _pages
-    }, {})
+    }
+    rewrites.push({
+        from: `/view-${pageName}`,
+        to: `/pages/${pageName}.html`
+    })
+    return result
+}, {})
 
+export default defineConfig(() => {
     return {
         plugins: [
             mpaPlugin({
