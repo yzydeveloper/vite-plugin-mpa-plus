@@ -82,6 +82,15 @@ export function createHtmlFixPlugin(options: Options): Plugin {
                 }
             }
         },
+        writeBundle() {
+            emittedFiles.forEach(emittedFile => {
+                this.emitFile({
+                    fileName: emittedFile.fileName,
+                    type: 'asset',
+                    source: emittedFile.source
+                })
+            })
+        },
         closeBundle() {
             if (!isProduction(viteConfig.mode)) return
             const root = slash(viteConfig.root || process.cwd())
