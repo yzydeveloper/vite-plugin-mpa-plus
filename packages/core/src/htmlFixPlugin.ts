@@ -27,18 +27,6 @@ function writeFile(
     fs.writeFileSync(filename, content)
 }
 
-// function emptyDir(dir: string): void {
-//     for (const file of fs.readdirSync(dir)) {
-//         const abs = path.resolve(dir, file)
-//         if (fs.lstatSync(abs).isDirectory()) {
-//             emptyDir(abs)
-//             fs.rmdirSync(abs)
-//         } else {
-//             fs.unlinkSync(abs)
-//         }
-//     }
-// }
-
 export function processTags(tags: InjectOptions['tags']): InjectOptions['tags'] {
     const _tags = tags?.map(tag => {
         const { attrs } = tag
@@ -57,6 +45,7 @@ export function processTags(tags: InjectOptions['tags']): InjectOptions['tags'] 
 
 export function createHtmlFixPlugin(options: Options): Plugin {
     let viteConfig: ResolvedConfig
+    const emittedFiles: any[] = []
     return {
         name: VITE_PLUGIN_NAME,
         configResolved(config) {
@@ -64,7 +53,7 @@ export function createHtmlFixPlugin(options: Options): Plugin {
         },
         transformIndexHtml: {
             enforce: 'post',
-            transform(html) {
+            transform(html, ctx) {
                 const root = parse(html)
                 const nodes = root.querySelectorAll(`[${VITE_PLUGIN_NAME}]`)
                 nodes.forEach(node => {
@@ -72,6 +61,21 @@ export function createHtmlFixPlugin(options: Options): Plugin {
                     node.setAttribute(type, url)
                 })
                 const _html = root.toString()
+
+                const originalFileName = normalizePath(ctx.path)
+                Object.values(options.pages ?? {}).forEach(page => {
+                    if(originalFileName.includes(page.template ?? '')) {
+                        const normalPath = normalizePath(page.filename ?? '')
+                        const fileName = normalPath.startsWith('/') ? normalPath.replace('/', '') : normalPath
+                        // pluginContext.emitFIle?
+                        emittedFiles.push({
+                            fileName,
+                            removeFileName: originalFileName,
+                            type: 'asset',
+                            source: _html
+                        })
+                    }
+                })
                 return {
                     html: _html,
                     tags: []
@@ -82,26 +86,13 @@ export function createHtmlFixPlugin(options: Options): Plugin {
             if (!isProduction(viteConfig.mode)) return
             const root = slash(viteConfig.root || process.cwd())
             const dest = slash(viteConfig.build.outDir || 'dist')
-            const map = Object.values(options.pages || {}).reduce<Record<string, string>>((result, page) => {
-                Reflect.set(result, normalizePath(page.template), normalizePath(page.filename))
-                return result
-            }, {})
-            const { input } = viteConfig.build.rollupOptions
-            if (input instanceof Object && !Array.isArray(input)) {
-                Object.values(input).forEach(async item => {
-                    const absolutePath = slash(item) // 获取入口文件的绝对/相对路径
-                    const relativePath = normalizePath(absolutePath.replace(`${root}/`, ''))
-                    const source = path.join(root, dest, relativePath)
-                    if (map[relativePath]) { // 防止入口有其他文件类型的入口
-                        const output = path.join(root, dest, map[relativePath])// 根据入口文件路径寻找对应的文件
-                        const content = fs.readFileSync(source) // 获取入口文件的内容
-                        await writeFile(output, content)
-                        const [dir] = relativePath.split('/') // 获取要输出的文件目录
-                        const abs = path.join(root, dest, dir)
-                        await fs.rmSync(abs, { recursive: true, force: true })
-                    }
-                })
-            }
+            emittedFiles.forEach(emittedFile => {
+                const { fileName, removeFileName, source } = emittedFile
+                const outputFileName = path.join(root, dest, fileName)
+                const removeFilePath = path.join(root, dest, removeFileName.split('/').filter(Boolean)?.[0])
+                fs.rmSync(removeFilePath, { recursive: true, force: true })
+                writeFile(outputFileName, source)
+            })
         }
     }
 }
