@@ -45,7 +45,10 @@ export function processTags(tags: InjectOptions['tags']): InjectOptions['tags'] 
 
 export function createHtmlFixPlugin(options: Options): Plugin {
     let viteConfig: ResolvedConfig
-    const emittedFiles: {newFileName: string, originalFileName: string}[] = []
+    const emittedFiles: {
+        newFileName: string,
+        originalFileName: string
+    }[] = []
     return {
         name: VITE_PLUGIN_NAME,
         configResolved(config) {
@@ -64,7 +67,7 @@ export function createHtmlFixPlugin(options: Options): Plugin {
 
                 const originalFileName = normalizePath(ctx.path)
                 Object.values(options.pages ?? {}).forEach(page => {
-                    if(originalFileName.includes(page.template ?? '')) {
+                    if (originalFileName.includes(page.template ?? '')) {
                         const normalPath = normalizePath(page.filename ?? '')
                         const newFileName = normalPath.startsWith('/') ? normalPath.replace('/', '') : normalPath
 
