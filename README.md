@@ -114,3 +114,17 @@ export default defineConfig(() => {
 
 ```
 
+## Development
+
+```sh
+# Install all dependencies
+pnpm install
+
+# Build or dev core package
+pnpm --filter vite-plugin-mpa-plus build
+pnpm --filter vite-plugin-mpa-plus dev
+
+# Build playground example
+pnpm --filter playground-mpa build
+
+```

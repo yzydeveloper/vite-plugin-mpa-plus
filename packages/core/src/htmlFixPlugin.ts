@@ -16,15 +16,15 @@ function isProduction(mode: string) {
     return mode === 'production'
 }
 
-function writeFile(
-    filename: string,
-    content: string | Uint8Array
+function copyFile(
+    from: string,
+    to: string
 ): void {
-    const dir = path.dirname(filename)
+    const dir = path.dirname(to)
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true })
     }
-    fs.writeFileSync(filename, content)
+    fs.copyFileSync(from, to)
 }
 
 export function processTags(tags: InjectOptions['tags']): InjectOptions['tags'] {
@@ -45,7 +45,7 @@ export function processTags(tags: InjectOptions['tags']): InjectOptions['tags'] 
 
 export function createHtmlFixPlugin(options: Options): Plugin {
     let viteConfig: ResolvedConfig
-    const emittedFiles: any[] = []
+    const emittedFiles: {newFileName: string, originalFileName: string}[] = []
     return {
         name: VITE_PLUGIN_NAME,
         configResolved(config) {
@@ -66,16 +66,15 @@ export function createHtmlFixPlugin(options: Options): Plugin {
                 Object.values(options.pages ?? {}).forEach(page => {
                     if(originalFileName.includes(page.template ?? '')) {
                         const normalPath = normalizePath(page.filename ?? '')
-                        const fileName = normalPath.startsWith('/') ? normalPath.replace('/', '') : normalPath
-                        // pluginContext.emitFIle?
+                        const newFileName = normalPath.startsWith('/') ? normalPath.replace('/', '') : normalPath
+
                         emittedFiles.push({
-                            fileName,
-                            removeFileName: originalFileName,
-                            type: 'asset',
-                            source: _html
+                            newFileName,
+                            originalFileName,
                         })
                     }
                 })
+
                 return {
                     html: _html,
                     tags: []
@@ -84,10 +83,11 @@ export function createHtmlFixPlugin(options: Options): Plugin {
         },
         writeBundle() {
             emittedFiles.forEach(emittedFile => {
+                // This is really only here to make sure the new filenames appear in the build output
                 this.emitFile({
-                    fileName: emittedFile.fileName,
+                    fileName: emittedFile.newFileName,
                     type: 'asset',
-                    source: emittedFile.source
+                    source: 'nothing'
                 })
             })
         },
@@ -95,12 +95,20 @@ export function createHtmlFixPlugin(options: Options): Plugin {
             if (!isProduction(viteConfig.mode)) return
             const root = slash(viteConfig.root || process.cwd())
             const dest = slash(viteConfig.build.outDir || 'dist')
-            emittedFiles.forEach(emittedFile => {
-                const { fileName, removeFileName, source } = emittedFile
-                const outputFileName = path.join(root, dest, fileName)
-                const removeFilePath = path.join(root, dest, removeFileName.split('/').filter(Boolean)?.[0])
-                fs.rmSync(removeFilePath, { recursive: true, force: true })
-                writeFile(outputFileName, source)
+
+            const dirsToRemove = emittedFiles.map(emittedFile => {
+                const { newFileName: fileName, originalFileName: removeFileName } = emittedFile
+                const newFileName = path.join(root, dest, fileName)
+                const oldFileName = path.join(root, dest, removeFileName)
+                copyFile(oldFileName, newFileName)
+                const removeDir = path.join(root, dest, removeFileName.split('/').filter(Boolean)?.[0])
+                return removeDir
+            })
+
+            // use FG to make sure dir is empty https://github.com/vbenjs/vite-plugin-html/blob/841d4ef04c3cf5ff0d4339350ae336aa83aa70ed/packages/core/src/htmlPlugin.ts#L150-L161
+            const uniqueDirsToRemove = [...new Set(dirsToRemove)]
+            uniqueDirsToRemove.forEach(removePath => {
+                fs.rmSync(removePath, { recursive: true, force: true })
             })
         }
     }
