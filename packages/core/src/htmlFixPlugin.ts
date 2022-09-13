@@ -12,10 +12,6 @@ function slash(p: string): string {
     return p.replace(/\\/g, '/')
 }
 
-function isProduction(mode: string) {
-    return mode === 'production'
-}
-
 function copyFile(
     from: string,
     to: string
@@ -95,7 +91,6 @@ export function createHtmlFixPlugin(options: Options): Plugin {
             })
         },
         closeBundle() {
-            if (!isProduction(viteConfig.mode)) return
             const root = slash(viteConfig.root || process.cwd())
             const dest = slash(viteConfig.build.outDir || 'dist')
 
