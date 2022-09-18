@@ -10,7 +10,7 @@
   },
   "scripts": {
     "prepublish": "pnpm --filter vite-plugin-mpa-plus build",
-    "release": "bumpp packages/core/package.json --commit --push --tag && pnpm -r publish --access public"
+    "release": "bumpp packages/core/package.json --commit --push --tag && pnpm --filter vite-plugin-mpa-plus publish --access public"
   },
   "dependencies": {
     "vite": "^2.5.10"
