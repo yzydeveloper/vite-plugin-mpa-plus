@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-mpa-plus-monorepo",
-  "version": "0.5.1",
+  "version": "0.5.3",
   "license": "MIT",
   "author": "yzydeveloper",
   "homepage": "https://github.com/yzydeveloper/vite-plugin-mpa-plus",
@@ -10,7 +10,7 @@
   },
   "scripts": {
     "prepublish": "pnpm --filter vite-plugin-mpa-plus build",
-    "release": "bumpp packages/core/package.json --commit --push --tag && pnpm --filter vite-plugin-mpa-plus publish --access public"
+    "release": "bumpp package.json packages/core/package.json --commit --push --tag && pnpm --filter vite-plugin-mpa-plus publish --access public"
   },
   "dependencies": {
     "vite": "^2.5.10"
