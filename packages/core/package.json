@@ -1,6 +1,6 @@
 {
     "name": "vite-plugin-mpa-plus",
-    "version": "0.5.3",
+    "version": "0.5.4",
     "description": "More flexible MPA (multipage application) supports html template",
     "author": "yzydeveloper",
     "license": "MIT",
