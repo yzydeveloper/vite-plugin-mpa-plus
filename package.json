@@ -13,7 +13,7 @@
     "release": "bumpp package.json packages/core/package.json --commit --push --tag && pnpm --filter vite-plugin-mpa-plus publish --access public"
   },
   "dependencies": {
-    "vite": "^2.5.10"
+    "vite": "^3.0.0"
   },
   "devDependencies": {
     "@yzydeveloper/eslint-config": "^0.1.4",
