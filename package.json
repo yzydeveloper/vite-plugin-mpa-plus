@@ -12,12 +12,10 @@
     "prepublish": "pnpm --filter vite-plugin-mpa-plus build",
     "release": "bumpp package.json packages/core/package.json --commit --push --tag && pnpm --filter vite-plugin-mpa-plus publish --access public"
   },
-  "dependencies": {
-    "vite": "^3.0.0"
-  },
   "devDependencies": {
     "@yzydeveloper/eslint-config": "^0.1.4",
     "bumpp": "^8.2.1",
+    "vite": "^3.0.0",
     "eslint": "^8.12.0",
     "typescript": "^4.6.3"
   }

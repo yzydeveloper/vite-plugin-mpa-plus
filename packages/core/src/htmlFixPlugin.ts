@@ -91,6 +91,7 @@ export function createHtmlFixPlugin(options: Options): Plugin {
             })
         },
         closeBundle() {
+            if(viteConfig.command !== 'build') return
             const root = slash(viteConfig.root || process.cwd())
             const dest = slash(viteConfig.build.outDir || 'dist')
 
