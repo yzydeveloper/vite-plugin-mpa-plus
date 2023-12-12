@@ -67,7 +67,7 @@ export function createHtmlFixPlugin(options: Options): Plugin {
                         const normalPath = normalizePath(page.filename ?? '')
                         const newFileName = normalPath.startsWith('/') ? normalPath.replace('/', '') : normalPath
 
-                        if(normalPath !== newFileName) {
+                        if(normalPath !== newFileName && !!page.filename) {
                             emittedFiles.push({
                                 newFileName,
                                 originalFileName,
