@@ -26,30 +26,32 @@ import { defineConfig } from 'vite'
 import mpaPlugin from 'vite-plugin-mpa-plus'
 
 export defineConfig({
-    mpaPlugin({
-        pages: {
-            app1: {
-                entry: 'src/app/app1/index.ts',
-                filename: '/pages/app1.html',
-                template: 'src/app/app1/index.html',
-                inject: {
-                    data: {
-                        title: "mpa-app1"
+    plugins: [
+        mpaPlugin({
+            pages: {
+                app1: {
+                    entry: 'src/app/app1/index.ts',
+                    filename: '/pages/app1.html',
+                    template: 'src/app/app1/index.html',
+                    inject: {
+                        data: {
+                            title: "mpa-app1"
+                        }
                     }
-                }
-            },
-            app2: {
-                entry: 'src/app/app2/index.ts',
-                filename: '/pages/app2.html',
-                template: 'src/app/app2/index.html',
-                inject: {
-                    data: {
-                        title: "mpa-app2"
+                },
+                app2: {
+                    entry: 'src/app/app2/index.ts',
+                    filename: '/pages/app2.html',
+                    template: 'src/app/app2/index.html',
+                    inject: {
+                        data: {
+                            title: "mpa-app2"
+                        }
                     }
                 }
             }
-        }
-    })
+        })
+    ]
 })
 ```
 
@@ -60,14 +62,16 @@ import { defineConfig } from 'vite'
 import mpaPlugin from 'vite-plugin-mpa-plus'
 
 export defineConfig({
-    mpaPlugin({
-        entry: 'src/main.ts',
-        inject: {
-            data: {
-                title: 'spa'
+    plugins: [
+        mpaPlugin({
+            entry: 'src/main.ts',
+            inject: {
+                data: {
+                    title: 'spa'
+                }
             }
-        }
-    })
+        })
+    ]
 })
 ```
 
