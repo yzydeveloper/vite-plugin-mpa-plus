@@ -226,8 +226,8 @@ export function createMpaPlugin(options: Options): Plugin {
             }) as Connect.NextHandleFunction)
         },
         transformIndexHtml: {
-            enforce: 'pre',
-            async transform(html, ctx) {
+            order: 'pre',
+            async handler(html, ctx) {
                 const url = ctx.filename
                 const { base, root } = viteConfig // process.cwd() > vite.root, The default root is process.cwd(), Fixing edge problems.
                 const excludeBaseUrl = url.replace(base, '/')

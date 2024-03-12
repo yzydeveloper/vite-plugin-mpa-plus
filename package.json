@@ -2,12 +2,12 @@
   "name": "vite-plugin-mpa-plus-monorepo",
   "version": "0.5.5",
   "license": "MIT",
-  "author": "yzydeveloper",
-  "homepage": "https://github.com/yzydeveloper/vite-plugin-mpa-plus",
   "repository": {
     "type": "git",
     "url": "https://github.com/yzydeveloper/vite-plugin-mpa-plus"
   },
+  "author": "yzydeveloper",
+  "homepage": "https://github.com/yzydeveloper/vite-plugin-mpa-plus",
   "scripts": {
     "prepublish": "pnpm --filter vite-plugin-mpa-plus build",
     "release": "bumpp package.json packages/core/package.json --commit --push --tag && pnpm --filter vite-plugin-mpa-plus publish --access public"
@@ -15,8 +15,8 @@
   "devDependencies": {
     "@yzydeveloper/eslint-config": "^0.1.4",
     "bumpp": "^8.2.1",
-    "vite": "^3.0.0",
     "eslint": "^8.12.0",
-    "typescript": "^4.6.3"
+    "typescript": "^4.6.3",
+    "vite": "^5.0.0"
   }
 }

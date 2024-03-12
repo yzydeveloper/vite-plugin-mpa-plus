@@ -51,8 +51,8 @@ export function createHtmlFixPlugin(options: Options): Plugin {
             viteConfig = config
         },
         transformIndexHtml: {
-            enforce: 'post',
-            transform(html, ctx) {
+            order: 'post',
+            handler(html, ctx) {
                 const root = parse(html)
                 const nodes = root.querySelectorAll(`[${VITE_PLUGIN_NAME}]`)
                 nodes.forEach(node => {
