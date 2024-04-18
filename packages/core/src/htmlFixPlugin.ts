@@ -2,7 +2,7 @@ import type { Plugin, ResolvedConfig } from 'vite'
 import type { InjectOptions, Options } from './types'
 import fs from 'fs'
 import path from 'path'
-import { normalizePath } from 'vite'
+import { normalizePath as _normalizePath } from 'vite'
 import { parse } from 'node-html-parser'
 
 const VITE_PLUGIN_NAME = 'vite-plugin-html-fix'
@@ -39,6 +39,14 @@ export function processTags(tags: InjectOptions['tags']): InjectOptions['tags'] 
     return _tags ?? []
 }
 
+function normalizePath(id: string) {
+    const fsPath = _normalizePath(id)
+    if(fsPath.startsWith('/')) {
+        return fsPath.replace('/', '')
+    }
+    return fsPath
+}
+
 export function createHtmlFixPlugin(options: Options): Plugin {
     let viteConfig: ResolvedConfig
     const emittedFiles: {
@@ -63,11 +71,11 @@ export function createHtmlFixPlugin(options: Options): Plugin {
 
                 const originalFileName = normalizePath(ctx.path)
                 Object.values(options.pages ?? {}).forEach(page => {
-                    if (originalFileName.includes(page.template ?? '')) {
-                        const normalPath = normalizePath(page.filename ?? '')
-                        const newFileName = normalPath.startsWith('/') ? normalPath.replace('/', '') : normalPath
+                    const templateFileName = normalizePath((page.template ?? ''))
+                    if (originalFileName === templateFileName) {
+                        const newFileName = normalizePath(page.filename ?? '')
 
-                        if(normalPath !== newFileName && !!page.filename) {
+                        if(newFileName !== originalFileName) {
                             emittedFiles.push({
                                 newFileName,
                                 originalFileName,
