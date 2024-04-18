@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-mpa-plus-monorepo",
-  "version": "0.5.6",
+  "version": "0.6.0",
   "license": "MIT",
   "repository": {
     "type": "git",
