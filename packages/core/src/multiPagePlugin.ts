@@ -232,6 +232,12 @@ export function createMpaPlugin(options: Options): Plugin {
                 const { base, root } = viteConfig // process.cwd() > vite.root, The default root is process.cwd(), Fixing edge problems.
                 const excludeBaseUrl = url.replace(base, '/')
                 const template = relative(root, excludeBaseUrl)
+
+                const matchedPage = Object.values(options.pages || {}).find(p => _normalizePath(`/${p.template}`) === _normalizePath(`/${template}`))
+                if (!matchedPage) {
+                    return html
+                }
+
                 const page = tryFindPage({ url: ctx.originalUrl }, rewrites, options.pages) ?? createPage(options, template)
                 const _html = await renderHtml(html, {
                     entry: page?.entry,
