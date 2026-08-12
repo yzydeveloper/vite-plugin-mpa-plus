@@ -109,7 +109,7 @@ export function createHtmlFixPlugin(options: Options): Plugin {
                 const { newFileName: fileName, originalFileName: removeFileName } = emittedFile
                 const newFileName = path.join(root, dest, fileName)
                 const oldFileName = path.join(root, dest, removeFileName)
-                copyFile(oldFileName, newFileName)
+                fs.renameSync(oldFileName, newFileName)
                 const removeDir = path.join(root, dest, removeFileName.split('/').filter(Boolean)?.[0])
                 return removeDir
             })
