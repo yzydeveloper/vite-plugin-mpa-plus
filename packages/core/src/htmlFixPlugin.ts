@@ -26,12 +26,13 @@ function copyFile(
 export function processTags(tags: InjectOptions['tags']): InjectOptions['tags'] {
     const _tags = tags?.map(tag => {
         const { attrs } = tag
+        const protectedAttrs = { ...attrs }
+        if (attrs?.href) delete protectedAttrs.href
+        if (attrs?.src) delete protectedAttrs.src
         return {
             ...tag,
             attrs: {
-                ...attrs,
-                ...(attrs?.href ? { href: '' } : {}),
-                ...(attrs?.src ? { src: '' } : {}),
+                ...protectedAttrs,
                 [VITE_PLUGIN_NAME]: `${attrs?.src || attrs?.href || ''}${SPLIT_MARK}${attrs?.src ? 'src' : 'href'}`
             }
         }
