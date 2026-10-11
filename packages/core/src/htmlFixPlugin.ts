@@ -73,7 +73,7 @@ export function createHtmlFixPlugin(options: Options): Plugin {
                 Object.values(options.pages ?? {}).forEach(page => {
                     const templateFileName = normalizePath((page.template ?? ''))
                     if (originalFileName === templateFileName) {
-                        const newFileName = normalizePath(page.filename ?? '')
+                        const newFileName = normalizePath(page.filename ?? originalFileName)
 
                         if(newFileName !== originalFileName) {
                             emittedFiles.push({
@@ -103,14 +103,14 @@ export function createHtmlFixPlugin(options: Options): Plugin {
         closeBundle() {
             if(viteConfig.command !== 'build') return
             const root = slash(viteConfig.root || process.cwd())
-            const dest = slash(viteConfig.build.outDir || 'dist')
+            const dest = path.resolve(root, viteConfig.build.outDir || 'dist')
 
             const dirsToRemove = emittedFiles.map(emittedFile => {
                 const { newFileName: fileName, originalFileName: removeFileName } = emittedFile
-                const newFileName = path.join(root, dest, fileName)
-                const oldFileName = path.join(root, dest, removeFileName)
+                const newFileName = path.join(dest, fileName)
+                const oldFileName = path.join(dest, removeFileName)
                 copyFile(oldFileName, newFileName)
-                const removeDir = path.join(root, dest, removeFileName.split('/').filter(Boolean)?.[0])
+                const removeDir = path.join(dest, removeFileName.split('/').filter(Boolean)?.[0])
                 return removeDir
             })
 

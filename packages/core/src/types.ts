@@ -21,6 +21,7 @@ export interface InjectOptions {
 
 export interface PageOption {
     entry?: string
+    /** Defaults to the template's original output path when omitted. */
     filename?: string
     template: string
     inject?: InjectOptions

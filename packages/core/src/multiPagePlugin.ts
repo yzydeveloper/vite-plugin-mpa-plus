@@ -4,11 +4,13 @@ import type { IncomingMessage } from 'http'
 import type { Options, InjectOptions, Pages, Rewrite } from './types'
 import { relative, resolve, basename, posix } from 'path'
 import { render } from 'ejs'
-import { loadEnv, normalizePath as _normalizePath } from 'vite'
+import { loadEnv, normalizePath as _normalizePath, version as viteVersion } from 'vite'
 import history from 'connect-history-api-fallback'
 import { processTags } from './htmlFixPlugin'
 
 const VITE_PLUGIN_NAME = 'vite-plugin-mpa-plus'
+const usesRolldown = Number.parseInt(viteVersion, 10) >= 8
+const bundlerOptionsKey = usesRolldown ? 'rolldownOptions' : 'rollupOptions'
 const DEFAULT_TEMPLATE = 'index.html'
 const INJECT_ENTRY = /<\/body>/
 const IS_INDEX = /^\/index$|^\/$/
@@ -86,9 +88,16 @@ export function createInput(options: Options, viteConfig: UserConfig | ResolvedC
             [key]: resolve(root || process.cwd(), template),
         }
     }
+    // Keep compiling against older Vite types while accepting Vite 8's input option.
+    const build = viteConfig.build as (NonNullable<UserConfig['build']> & {
+        rolldownOptions?: { input?: Record<string, string> }
+    }) | undefined
+    const userInput = usesRolldown
+        ? build?.rolldownOptions?.input ?? build?.rollupOptions?.input
+        : build?.rollupOptions?.input
     return {
         ...input,
-        ...(viteConfig.build?.rollupOptions?.input as Record<string, string> ?? {})
+        ...(userInput as Record<string, string> ?? {})
     }
 }
 
@@ -176,7 +185,7 @@ export function createMpaPlugin(options: Options): Plugin {
             const input = createInput(options, config)
             return {
                 build: {
-                    rollupOptions: {
+                    [bundlerOptionsKey]: {
                         input,
                     },
                 },
@@ -233,9 +242,12 @@ export function createMpaPlugin(options: Options): Plugin {
                 const excludeBaseUrl = url.replace(base, '/')
                 const template = relative(root, excludeBaseUrl)
 
-                const matchedPage = Object.values(options.pages || {}).find(p => _normalizePath(`/${p.template}`) === _normalizePath(`/${template}`))
-                if (!matchedPage) {
-                    return html
+                const pages = Object.values(options.pages ?? {})
+                if (pages.length > 0) {
+                    const matchedPage = pages.find(p => _normalizePath(`/${p.template}`) === _normalizePath(`/${template}`))
+                    if (!matchedPage) {
+                        return html
+                    }
                 }
 
                 const page = tryFindPage({ url: ctx.originalUrl }, rewrites, options.pages) ?? createPage(options, template)
